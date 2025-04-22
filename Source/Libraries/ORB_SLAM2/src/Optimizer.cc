@@ -380,7 +380,8 @@ int Optimizer::PoseOptimization(Frame *pFrame) {
       }
 
       const float chi2 = e->chi2();
-
+      
+      // CONDITION 3
       if (chi2 > chi2Mono[it]) {
         pFrame->mvbOutlier[idx] = true;
         e->setLevel(1);
@@ -389,6 +390,9 @@ int Optimizer::PoseOptimization(Frame *pFrame) {
         pFrame->mvbOutlier[idx] = false;
         e->setLevel(0);
       }
+
+      // pFrame->mvbOutlier[idx] = false;
+      // e->setLevel(0);
 
       if (it == 2)
         e->setRobustKernel(0);

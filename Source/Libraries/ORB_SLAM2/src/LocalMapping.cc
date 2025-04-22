@@ -77,7 +77,7 @@ void LocalMapping::Run() {
         KeyFrameCulling();
       }
 
-      mpLoopCloser->InsertKeyFrame(mpCurrentKeyFrame);
+      // mpLoopCloser->InsertKeyFrame(mpCurrentKeyFrame); // CONDITION 4
     } else if (Stop()) {
       // Safe area to stop
       while (isStopped() && !CheckFinish()) {

@@ -621,7 +621,7 @@ void Tracking::CreateInitialMapMonocular() {
   float medianDepth = pKFini->ComputeSceneMedianDepth(2);
   float invMedianDepth = 1.0f / medianDepth;
 
-  if (medianDepth < 0 || pKFcur->TrackedMapPoints(1) < 100) {
+  if (medianDepth < 0 || pKFcur->TrackedMapPoints(1) < 50) { // default 100, if lower than 100, reset slam to find a new map
     cout << "Wrong initialization, reseting..." << endl;
     Reset();
     return;
@@ -1379,7 +1379,7 @@ void Tracking::Reset() {
 
   // Reset Loop Closing
   cout << "Reseting Loop Closing...";
-  mpLoopClosing->RequestReset();
+  // mpLoopClosing->RequestReset();  // CONDITION 4
   cout << " done" << endl;
 
   // Clear BoW Database

@@ -143,9 +143,9 @@ System::System(const string &strVocFile, const string &strSettingsFile,
   mptLocalMapping = new thread(&ORB_SLAM2::LocalMapping::Run, mpLocalMapper);
 
   // Initialize the Loop Closing thread and launch
-  mpLoopCloser = new LoopClosing(mpMap, mpKeyFrameDatabase, mpVocabulary,
-                                 mSensor != MONOCULAR);
-  mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run, mpLoopCloser);
+  // mpLoopCloser = new LoopClosing(mpMap, mpKeyFrameDatabase, mpVocabulary, // CONDITION 4
+  //                                mSensor != MONOCULAR);
+  // mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run, mpLoopCloser); // CONDITION 4
 
   // Initialize the Viewer thread
   if (bUseViewer) {
@@ -156,13 +156,13 @@ System::System(const string &strVocFile, const string &strSettingsFile,
 
   // Set pointers between threads
   mpTracker->SetLocalMapper(mpLocalMapper);
-  mpTracker->SetLoopClosing(mpLoopCloser);
+  // mpTracker->SetLoopClosing(mpLoopCloser); // CONDITION 4
 
   mpLocalMapper->SetTracker(mpTracker);
-  mpLocalMapper->SetLoopCloser(mpLoopCloser);
+  // mpLocalMapper->SetLoopCloser(mpLoopCloser); // CONDITION 4
 
-  mpLoopCloser->SetTracker(mpTracker);
-  mpLoopCloser->SetLocalMapper(mpLocalMapper);
+  // mpLoopCloser->SetTracker(mpTracker);  // CONDITION 4
+  // mpLoopCloser->SetLocalMapper(mpLocalMapper); // CONDITION 4
 }
 
 cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight,
@@ -335,7 +335,7 @@ void System::Reset() {
 
 void System::Shutdown() {
   mpLocalMapper->RequestFinish();
-  mpLoopCloser->RequestFinish();
+  // mpLoopCloser->RequestFinish(); // CONDITION 4
   if (mpViewer) {
     mpViewer->RequestFinish();
     while (!mpViewer->isFinished())
@@ -343,8 +343,10 @@ void System::Shutdown() {
   }
 
   // Wait until all thread have effectively stopped
-  while (!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() ||
-         mpLoopCloser->isRunningGBA()) {
+
+  // while (!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() ||
+  //        mpLoopCloser->isRunningGBA()) {
+  while(!mpLocalMapper->isFinished()) { // CONDITION 4
     this_thread::sleep_for(chrono::milliseconds(1));
   }
 
