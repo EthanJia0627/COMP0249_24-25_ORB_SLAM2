@@ -1,0 +1,13 @@
+diff --git a/TUM3.yaml b/TUM3.yaml
+index b1bb5a7..e08c8e6 100644
+--- a/TUM3.yaml
++++ b/TUM3.yaml
+@@ -26,7 +26,7 @@ Camera.RGB: 1
+ #--------------------------------------------------------------------------------------------
+ 
+ # ORB Extractor: Number of features per image
+-ORBextractor.nFeatures: 550
++ORBextractor.nFeatures: 1000
+ 
+ # ORB Extractor: Scale factor between levels in the scale pyramid 	
+ ORBextractor.scaleFactor: 1.2

@@ -1,0 +1,107 @@
+diff --git a/Source/Libraries/ORB_SLAM2/src/LocalMapping.cc b/Source/Libraries/ORB_SLAM2/src/LocalMapping.cc
+index eda6b68..ec5a7af 100644
+--- a/Source/Libraries/ORB_SLAM2/src/LocalMapping.cc
++++ b/Source/Libraries/ORB_SLAM2/src/LocalMapping.cc
+@@ -77,7 +77,7 @@ void LocalMapping::Run() {
+         KeyFrameCulling();
+       }
+ 
+-      mpLoopCloser->InsertKeyFrame(mpCurrentKeyFrame);
++      // mpLoopCloser->InsertKeyFrame(mpCurrentKeyFrame); // CONDITION 4
+     } else if (Stop()) {
+       // Safe area to stop
+       while (isStopped() && !CheckFinish()) {
+diff --git a/Source/Libraries/ORB_SLAM2/src/Optimizer.cc b/Source/Libraries/ORB_SLAM2/src/Optimizer.cc
+index dc04445..457260d 100644
+--- a/Source/Libraries/ORB_SLAM2/src/Optimizer.cc
++++ b/Source/Libraries/ORB_SLAM2/src/Optimizer.cc
+@@ -380,7 +380,8 @@ int Optimizer::PoseOptimization(Frame *pFrame) {
+       }
+ 
+       const float chi2 = e->chi2();
+-
++      
++      // CONDITION 3
+       if (chi2 > chi2Mono[it]) {
+         pFrame->mvbOutlier[idx] = true;
+         e->setLevel(1);
+@@ -390,6 +391,9 @@ int Optimizer::PoseOptimization(Frame *pFrame) {
+         e->setLevel(0);
+       }
+ 
++      // pFrame->mvbOutlier[idx] = false;
++      // e->setLevel(0);
++
+       if (it == 2)
+         e->setRobustKernel(0);
+     }
+diff --git a/Source/Libraries/ORB_SLAM2/src/System.cc b/Source/Libraries/ORB_SLAM2/src/System.cc
+index d066509..e9546b8 100644
+--- a/Source/Libraries/ORB_SLAM2/src/System.cc
++++ b/Source/Libraries/ORB_SLAM2/src/System.cc
+@@ -143,9 +143,9 @@ System::System(const string &strVocFile, const string &strSettingsFile,
+   mptLocalMapping = new thread(&ORB_SLAM2::LocalMapping::Run, mpLocalMapper);
+ 
+   // Initialize the Loop Closing thread and launch
+-  mpLoopCloser = new LoopClosing(mpMap, mpKeyFrameDatabase, mpVocabulary,
+-                                 mSensor != MONOCULAR);
+-  mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run, mpLoopCloser);
++  // mpLoopCloser = new LoopClosing(mpMap, mpKeyFrameDatabase, mpVocabulary, // CONDITION 4
++  //                                mSensor != MONOCULAR);
++  // mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run, mpLoopCloser); // CONDITION 4
+ 
+   // Initialize the Viewer thread
+   if (bUseViewer) {
+@@ -156,13 +156,13 @@ System::System(const string &strVocFile, const string &strSettingsFile,
+ 
+   // Set pointers between threads
+   mpTracker->SetLocalMapper(mpLocalMapper);
+-  mpTracker->SetLoopClosing(mpLoopCloser);
++  // mpTracker->SetLoopClosing(mpLoopCloser); // CONDITION 4
+ 
+   mpLocalMapper->SetTracker(mpTracker);
+-  mpLocalMapper->SetLoopCloser(mpLoopCloser);
++  // mpLocalMapper->SetLoopCloser(mpLoopCloser); // CONDITION 4
+ 
+-  mpLoopCloser->SetTracker(mpTracker);
+-  mpLoopCloser->SetLocalMapper(mpLocalMapper);
++  // mpLoopCloser->SetTracker(mpTracker);  // CONDITION 4
++  // mpLoopCloser->SetLocalMapper(mpLocalMapper); // CONDITION 4
+ }
+ 
+ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight,
+@@ -335,7 +335,7 @@ void System::Reset() {
+ 
+ void System::Shutdown() {
+   mpLocalMapper->RequestFinish();
+-  mpLoopCloser->RequestFinish();
++  // mpLoopCloser->RequestFinish(); // CONDITION 4
+   if (mpViewer) {
+     mpViewer->RequestFinish();
+     while (!mpViewer->isFinished())
+@@ -343,8 +343,10 @@ void System::Shutdown() {
+   }
+ 
+   // Wait until all thread have effectively stopped
+-  while (!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() ||
+-         mpLoopCloser->isRunningGBA()) {
++
++  // while (!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() ||
++  //        mpLoopCloser->isRunningGBA()) {
++  while(!mpLocalMapper->isFinished()) { // CONDITION 4
+     this_thread::sleep_for(chrono::milliseconds(1));
+   }
+ 
+diff --git a/Source/Libraries/ORB_SLAM2/src/Tracking.cc b/Source/Libraries/ORB_SLAM2/src/Tracking.cc
+index c60fc97..e7cac1e 100644
+--- a/Source/Libraries/ORB_SLAM2/src/Tracking.cc
++++ b/Source/Libraries/ORB_SLAM2/src/Tracking.cc
+@@ -1379,7 +1379,7 @@ void Tracking::Reset() {
+ 
+   // Reset Loop Closing
+   cout << "Reseting Loop Closing...";
+-  mpLoopClosing->RequestReset();
++  // mpLoopClosing->RequestReset();  // CONDITION 4
+   cout << " done" << endl;
+ 
+   // Clear BoW Database

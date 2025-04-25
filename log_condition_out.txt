@@ -1,0 +1,33 @@
+diff --git a/Source/Libraries/ORB_SLAM2/src/Optimizer.cc b/Source/Libraries/ORB_SLAM2/src/Optimizer.cc
+index 457260d..5d25f58 100644
+--- a/Source/Libraries/ORB_SLAM2/src/Optimizer.cc
++++ b/Source/Libraries/ORB_SLAM2/src/Optimizer.cc
+@@ -382,17 +382,17 @@ int Optimizer::PoseOptimization(Frame *pFrame) {
+       const float chi2 = e->chi2();
+       
+       // CONDITION 3
+-      if (chi2 > chi2Mono[it]) {
+-        pFrame->mvbOutlier[idx] = true;
+-        e->setLevel(1);
+-        nBad++;
+-      } else {
+-        pFrame->mvbOutlier[idx] = false;
+-        e->setLevel(0);
+-      }
+-
+-      // pFrame->mvbOutlier[idx] = false;
+-      // e->setLevel(0);
++      // if (chi2 > chi2Mono[it]) {
++      //   pFrame->mvbOutlier[idx] = true;
++      //   e->setLevel(1);
++      //   nBad++;
++      // } else {
++      //   pFrame->mvbOutlier[idx] = false;
++      //   e->setLevel(0);
++      // }
++
++      pFrame->mvbOutlier[idx] = false;
++      e->setLevel(0);
+ 
+       if (it == 2)
+         e->setRobustKernel(0);

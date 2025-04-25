@@ -1,0 +1,13 @@
+diff --git a/Source/Libraries/ORB_SLAM2/src/Tracking.cc b/Source/Libraries/ORB_SLAM2/src/Tracking.cc
+index c60fc97..e7cac1e 100644
+--- a/Source/Libraries/ORB_SLAM2/src/Tracking.cc
++++ b/Source/Libraries/ORB_SLAM2/src/Tracking.cc
+@@ -621,7 +621,7 @@ void Tracking::CreateInitialMapMonocular() {
+   float medianDepth = pKFini->ComputeSceneMedianDepth(2);
+   float invMedianDepth = 1.0f / medianDepth;
+ 
+-  if (medianDepth < 0 || pKFcur->TrackedMapPoints(1) < 100) {
++  if (medianDepth < 0 || pKFcur->TrackedMapPoints(1) < 50) { // default 100, if lower than 100, reset slam to find a new map
+     cout << "Wrong initialization, reseting..." << endl;
+     Reset();
+     return;
